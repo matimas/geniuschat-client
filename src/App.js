@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import VantaBackground from "./components/VantaBackground";
-
+const API = import.meta.env.VITE_API_BASE;
 const personas = [
   {
     name: "פסיכולוג",
@@ -57,7 +57,7 @@ export default function App() {
 
   // מביאה את כל השיחות הקיימות
   const loadHistory = async () => {
-    const res = await axios.get("http://localhost:5000/api/conversations");
+    const res = await axios.get(`${API}/api/conversations`);
     console.log(res.data);
     setHistory(res.data);               // [{ _id, persona, createdAt }, ...]
     setShowHist(true);
@@ -66,7 +66,7 @@ export default function App() {
   // טוענת שיחה ספציפית ומציגה אותה
   const openConversation = async (id) => {
     try {
-      const r = await axios.get(`http://localhost:5000/api/conversations/${id}`);
+      const r = await axios.get(`${API}/api/conversations/${id}`);
       setMessages(r.data.messages);
       setConvId(id);
       // שומר גם persona לטובת הרקע
@@ -89,7 +89,7 @@ export default function App() {
     setLoading(true);
 
     try {
-      const res = await axios.post("http://localhost:5000/api/chat", {
+      const res = await axios.post(`${API}/api/chat`, {
         conversationId: convId,
         personaPrompt: persona.prompt,
         messages: newMessages,
