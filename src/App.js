@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import VantaBackground from "./components/VantaBackground";
-const API = import.meta.env.VITE_API_BASE;
+const API = process.env.REACT_APP_API_BASE
 const personas = [
   {
     name: "פסיכולוג",
