@@ -70,7 +70,7 @@ export default function App() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    window.location.href = "/login";
+    navigate("/login");
   };
   
   useEffect(() => {
