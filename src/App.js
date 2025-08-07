@@ -1,45 +1,11 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import VantaBackground from "./components/VantaBackground";
-const API = process.env.REACT_APP_API_BASE
-const personas = [
-  {
-    name: "פסיכולוג",
-    prompt: "אתה פסיכולוג תומך, מדבר בצורה רגועה ומכילה. אתה עוזר לאנשים להבין את הרגשות שלהם ולמצוא פתרונות בעדינות.",
-  },
-  {
-    name: "מדען",
-    prompt: "אתה מדען מומחה בפיזיקה, מדבר בשפה מדעית, מדויק ומבוסס עובדות. תן תשובות מקצועיות בלבד.",
-  },
-  {
-    name: "סבא",
-    prompt: "אתה סבא בן 85 עם הרבה חוכמת חיים. אתה מספר סיפורים, נותן עצות מהלב, ומעודד גישה רגועה לחיים.",
-  },
-  {
-    name: "ילד בן 5",
-    prompt: "אתה ילד בן 5, חמוד וסקרן. אתה שואל מלא שאלות ואומר דברים בתמימות של ילד קטן.",
-  },
-  {
-    name: "משורר",
-    prompt: "אתה משורר רגיש. דברך שזורים בדימויים, חרוזים ונשמה פיוטית.",
-  },
-  {
-    name: "לוחם",
-    prompt: "אתה לוחם אמיץ. תגובתך ישירה, חדת מבע ובעלת תחושת שליחות וגבורה.",
-  },
-  {
-    name: "אסטרונאוט",
-    prompt: "אתה אסטרונאוט עם ידע עמוק בחלל. דבריך טכניים אך מעוררי השראה על היקום.",
-  },
-  {
-    name: "פייטן",
-    prompt: "אתה פייטן בעל סגנון מסורתי. דבריך שזורים בביטויי קודש ושירה עתיקה.",
-  },
-  {
-    name: "נזיר",
-    prompt: "אתה נזיר זן. תגובתך שקטה, מעודדת מדיטציה והסתכלות פנימית.",
-  },
-];
+import { useNavigate } from "react-router-dom";
+import personas from "./personaCharacter.json";
+const API = process.env.REACT_APP_API_BASE || "http://localhost:5000";
+
+
 
 export default function App() {
   const [messages, setMessages] = useState([]);
@@ -49,12 +15,10 @@ export default function App() {
   const [history, setHistory] = useState([]);   // רשימת שיחות
   const [convId, setConvId] = useState(null); // id שיחה פעילה
   const [showHist, setShowHist] = useState(false);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    loadHistory();          // נטען מיד כשהקומפוננטה נטענת
-  }, []);                    // [] ⇒ רק בהרכבה ראשונה
   
-
+  
   // מביאה את כל השיחות הקיימות
   const loadHistory = async () => {
     const res = await axios.get(`${API}/api/conversations`);
@@ -104,10 +68,56 @@ export default function App() {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    window.location.href = "/login";
+  };
+  
+  useEffect(() => {
+    if (!localStorage.getItem("token")) navigate("/login")
+    else {
+      loadHistory();          // נטען מיד כשהקומפוננטה נטענת
+    }
+  }, [navigate]);                    // [] ⇒ רק בהרכבה ראשונה
+
   return (
     <VantaBackground persona={persona.name}>
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="bg-white/80 backdrop-blur-md p-6 rounded-2xl shadow-xl w-full max-w-lg">
+          <div className="flex justify-between items-center mb-4">
+
+            <button
+              onClick={handleLogout}
+              className="
+              flex items-center gap-2
+              px-3 py-1.5
+              rounded-full
+              text-sm font-medium
+              text-red-600
+              border border-red-300
+              bg-white/80 backdrop-blur
+              shadow-sm
+              transition
+              hover:bg-red-50 hover:text-red-700
+              focus:outline-none focus:ring-2 focus:ring-red-400
+            "
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-10V5m-6 9a9 9 0 110-6"
+                />
+              </svg>
+              Logout
+            </button>
+          </div>
+
           <h1 className="text-3xl font-bold text-center mb-4 text-gray-900">GeniusChat 🤖</h1>
           {showHist && (
             <div className="mb-4 rounded-lg border bg-white/90 backdrop-blur p-3 max-h-60 overflow-y-auto space-y-1 shadow">
